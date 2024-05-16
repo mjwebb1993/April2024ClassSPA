@@ -1,9 +1,10 @@
 import html from "html-literal";
+import dogWithFlower from "../../assets/img/dog-with-flower.jpg"
 
 export default () => html`
   <section id="bio">
     <h2>Vivamus ac justo eu nisi</h2>
-    <img src="assets/img/dog-with-flower.jpg" alt="me" />
+    <img src="${dogWithFlower}" alt="me" />
     <p>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu sagittis
       nulla. Etiam semper mauris a quam tempus, non feugiat massa posuere. Morbi
