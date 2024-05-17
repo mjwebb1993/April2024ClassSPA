@@ -2,7 +2,7 @@ import Navigo from "navigo";
 import { camelCase } from "lodash";
 
 import { header, nav, main, footer } from "./components";
-import * as store from "./store";
+import * as store from "./store/index.js";
 
 const router = new Navigo("/");
 
@@ -30,7 +30,7 @@ router
     "/": () => render(store.home),
     ":view": ({ data, params }) => {
       const view = data?.view ? camelCase(data.view) : "home";
-      if (view in store) {
+      if (view in store) { // store[view]
         render(store[view]);
       } else {
         console.log(`View ${view} not defined`);
@@ -38,6 +38,6 @@ router
       }
     },
   })
-  .notFound(() => render(store.notFound))
+  .notFound(() => render(store.viewNotFound))
   .resolve();
 

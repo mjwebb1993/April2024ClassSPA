@@ -1,4 +1,4 @@
 export default {
-    header: "Bio",
-    view: "aboutMe"
-  };
+  header: "Bio",
+  view: "aboutMe"
+};
