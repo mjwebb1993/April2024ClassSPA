@@ -25,10 +25,6 @@ function afterRender() {
   });
 }
 
-// 723e0986e0f98b33c0d046e7f38d272c
-
-// https://api.openweathermap.org/data/2.5/weather?q=St. Louis&APPID=${process.env.OPEN_WEATHER_MAP_API_KEY}
-
 router.hooks({
   before: (done, params) => {
     // We need to know what view we are on to know what data to fetch
