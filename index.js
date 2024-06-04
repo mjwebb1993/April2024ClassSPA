@@ -52,13 +52,6 @@ router.hooks({
               description: response.data.weather[0].main
             };
 
-            // An alternate method would be to store the values independently
-            /*
-      store.Home.weather.city = response.data.name;
-      store.Home.weather.temp = kelvinToFahrenheit(response.data.main.temp);
-      store.Home.weather.feelsLike = kelvinToFahrenheit(response.data.main.feels_like);
-      store.Home.weather.description = response.data.weather[0].main;
-      */
             done();
           })
           .catch(err => {
@@ -72,8 +65,10 @@ router.hooks({
         axios
           .get(`${process.env.PIZZA_PLACE_API_URL}/pizzas`)
           .then(response => {
-            // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
             console.log("response", response);
+          })
+          .then(response => {
+            // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
             store.pizza.pizzas = response.data;
             done();
           })

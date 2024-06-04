@@ -1,7 +1,11 @@
 import html from "html-literal";
+import logo from "../assets/img/logo.jpg";
 
 export default state => html`
   <header>
-    <h1>${state.header}</h1>
+    <span>
+      <a href="/"><img class="header-logo" src="${logo}" alt=""/></a>
+    </span>
+    <span class="header-text">${state.header}</span>
   </header>
 `;
