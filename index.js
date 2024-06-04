@@ -52,13 +52,6 @@ router.hooks({
               description: response.data.weather[0].main
             };
 
-            // An alternate method would be to store the values independently
-            /*
-      store.Home.weather.city = response.data.name;
-      store.Home.weather.temp = kelvinToFahrenheit(response.data.main.temp);
-      store.Home.weather.feelsLike = kelvinToFahrenheit(response.data.main.feels_like);
-      store.Home.weather.description = response.data.weather[0].main;
-      */
             done();
           })
           .catch(err => {
