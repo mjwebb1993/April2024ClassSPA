@@ -3,6 +3,8 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import pizzas from "./routers/pizzas.js";
+import Weather from "./models/Weather.js";
+import axios from "axios";
 
 
 // Load environment variables from .env file
@@ -65,44 +67,27 @@ app.get("/status", (request, response) => {
 });
 
 // Handle the request with HTTP GET method with query parameters and a url parameter
-app.get("/weather/:city", (request, response) => {
-  // Express adds a "params" Object to requests that has an matches parameter created using the colon syntax
+app.get("/weather/:city", async (request, response) => {
   const city = request.params.city;
 
-  // Set defaults values for the query string parameters
-  let cloudy = "clear";
-  let rainy = false;
-  let lowTemp = 32;
-  // check if the request.query.cloudy attribute exists
-  if ("cloudy" in request.query) {
-    // If so update the variable with the query string value
-    cloudy = request.query.cloudy;
-  }
-  if ("rainy" in request.query && request.query.rainy === "true") {
-    rainy = request.query.rainy;
-  }
-  if ("lowtemp" in request.query) {
-    lowTemp = Number(request.query.lowtemp);
-  }
+  const weather = await axios
+    // Get request to retrieve the current weather data using the API key and providing a city name
+    .get(
+      `https://api.openweathermap.org/data/2.5/weather?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}&units=imperial&q=${city}`
+    );
 
-  // Generate a random number to use as the temperature
-  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values_inclusive
-  const min = 70;
-  const max = 90;
-  const temp = Math.floor(Math.random() * (max - min + 1) + min);
+  const data = {
+    city: weather.data.name,
+    temp: weather.data.main.temp,
+    feelsLike: weather.data.main.feels_like,
+    description: weather.data.weather[0].main
+  };
 
-  // handle GET request for weather with an route parameter of "city"
-  response.json({
-    text: `The weather in ${city} is ${temp} degrees today.`,
-    cloudy: cloudy,
-    // When the key and value variable are named the same you can omit the value variable
-    rainy,
-    temp: {
-      current: temp,
-      low: lowTemp
-    },
-    city
-  });
+  const newWeather = new Weather(data);
+
+  const saveResponse = await newWeather.save();
+
+  response.json(data);
 });
 
 app.use("/pizzas", pizzas);
