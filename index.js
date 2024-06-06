@@ -85,17 +85,15 @@ router.hooks({
       case "home":
         axios
           // Get request to retrieve the current weather data using the API key and providing a city name
-          .get(
-            `https://api.openweathermap.org/data/2.5/weather?appid=${process.env.OPEN_WEATHER_MAP_API_KEY}&units=imperial&q=st%20louis`
-          )
+          .get(`${process.env.PIZZA_PLACE_API_URL}/weather/st%20louis`)
           .then(response => {
             console.log("Weather Data:", response.data);
             // Create an object to be stored in the Home state from the response
             store.home.weather = {
-              city: response.data.name,
-              temp: response.data.main.temp,
-              feelsLike: response.data.main.feels_like,
-              description: response.data.weather[0].main
+              city: response.data.city,
+              temp: response.data.temp,
+              feelsLike: response.data.feelsLike,
+              description: response.data.description
             };
 
             done();
