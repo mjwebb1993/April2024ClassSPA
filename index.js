@@ -120,6 +120,24 @@ router.hooks({
             done();
           });
         break;
+
+      case "weather":
+        // New Axios get request utilizing already made environment variable
+        axios
+          .get(`${process.env.PIZZA_PLACE_API_URL}/weather`)
+          .then(response => {
+            console.log("response", response);
+
+            // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
+            store.weather.records = response.data;
+            done();
+          })
+          .catch(error => {
+            console.log("It puked", error);
+            done();
+          });
+        break;
+
       default:
         done();
     }

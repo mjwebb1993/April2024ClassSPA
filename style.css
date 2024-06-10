@@ -48,6 +48,10 @@ footer {
   margin: 1rem;
 }
 
+.narrow-column {
+  max-width: 12ch;
+}
+
 #pizzas {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.2em;
