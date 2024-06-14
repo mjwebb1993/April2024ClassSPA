@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import pizzas from "./routers/pizzas.js";
 import weather from "./routers/weather.js";
+import axios from "axios";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -62,6 +63,19 @@ app.get("/status", (request, response) => {
   // Create the response body
   // End and return the response
   response.send(JSON.stringify({ message: "Service healthy" }));
+});
+
+app.get("/mex/:symbol", (request, response) => {
+  axios
+    .get(
+      `https://api.mexc.com/api/v3/klines?symbol=${request.params.symbol}USDT&interval=1d&limit=100`
+    )
+    .then(mexData => {
+      response.send(mexData.data);
+    })
+    .catch(error => {
+      response.status(500).json(error);
+    });
 });
 
 app.use("/weather", weather);

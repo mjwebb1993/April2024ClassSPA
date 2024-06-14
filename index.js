@@ -3,6 +3,9 @@ import { camelCase } from "lodash";
 import { header, nav, main, footer } from "./components";
 import * as store from "./store/index.js";
 import axios from "axios";
+import Chart from "chart.js/auto";
+import "chartjs-adapter-date-fns";
+import { enUS } from "date-fns/locale";
 
 const router = new Navigo("/");
 
@@ -69,6 +72,57 @@ function afterRender(state) {
         });
     });
   }
+
+  if (state.view === "chart") {
+    // const labels = state.records.map(record => {
+    //   return record[0];
+    // });
+
+    const data = state.records.map(record => {
+      return {
+        // openTime: record[0],
+        // open: record[1],
+        // high: record[2],
+        // low: record[3],
+        // close: record[4],
+        // volume: record[5],
+        // closeTime: record[6],
+        // quoteAssetVolume: record[7]
+        // x: new Date(record[0]),
+        x: record[0],
+        y: record[2]
+      };
+    });
+
+    // console.log("matsinet-index.js:92-labels:", labels);
+    console.log("matsinet-index.js:93-data:", data);
+
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        datasets: [
+          {
+            data
+          }
+        ]
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              text: "Time"
+            },
+            type: "time",
+            adapters: {
+              date: {
+                locale: enUS
+              }
+            }
+          }
+        }
+      }
+    });
+  }
 }
 
 router.hooks({
@@ -130,6 +184,20 @@ router.hooks({
 
             // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
             store.weather.records = response.data;
+            done();
+          })
+          .catch(error => {
+            console.log("It puked", error);
+            done();
+          });
+        break;
+
+      case "chart":
+        axios
+          .get(`${process.env.PIZZA_PLACE_API_URL}/mex/BTC`)
+          .then(response => {
+            console.log(response.data);
+            store.chart.records = response.data;
             done();
           })
           .catch(error => {
