@@ -125,6 +125,16 @@ function afterRender(state) {
   }
 }
 
+// These functions are invoked inside Promise.all below inside the "home" case
+// These functions return the response body returned by the axios request
+function getPizzas() {
+  return axios.get(`${process.env.PIZZA_PLACE_API_URL}/pizzas`);
+}
+
+function getWeather() {
+  return axios.get(`${process.env.PIZZA_PLACE_API_URL}/weather/st%20louis`);
+}
+
 router.hooks({
   before: (done, params) => {
     // We need to know what view we are on to know what data to fetch
@@ -137,25 +147,48 @@ router.hooks({
       // Add a case for each view that needs data from an API
       // New Case for the home View
       case "home":
-        axios
-          // Get request to retrieve the current weather data using the API key and providing a city name
-          .get(`${process.env.PIZZA_PLACE_API_URL}/weather/st%20louis`)
-          .then(response => {
-            console.log("Weather Data:", response.data);
-            // Create an object to be stored in the Home state from the response
-            store.home.weather = {
-              city: response.data.city,
-              temp: response.data.temp,
-              feelsLike: response.data.feelsLike,
-              description: response.data.description
-            };
+        //getPizzas() and getWeather() are passed in Promise.all inside an array
+        Promise.all([getPizzas(), getWeather()])
+          // The returned response from each function is passed through the callback function below
+          // The callback function has two parameters that will handle the returned response arguments
+          .then(([pizzaData, weatherData]) => {
+            console.log("PizzaData", pizzaData);
+            console.log("WeatherData", weatherData);
 
+            store.pizza.pizzas = pizzaData.data;
+
+            store.home.weather = {
+              city: weatherData.data.city,
+              temp: weatherData.data.temp,
+              feelsLike: weatherData.data.feelsLike,
+              description: weatherData.data.description
+            };
             done();
           })
           .catch(err => {
             console.log(err);
             done();
           });
+
+        // axios
+        //   // Get request to retrieve the current weather data using the API key and providing a city name
+        //   .get(`${process.env.PIZZA_PLACE_API_URL}/weather/st%20louis`)
+        //   .then((response) => {
+        //     console.log("Weather Data:", response.data);
+        //     // Create an object to be stored in the Home state from the response
+        //     store.home.weather = {
+        //       city: response.data.city,
+        //       temp: response.data.temp,
+        //       feelsLike: response.data.feelsLike,
+        //       description: response.data.description,
+        //     };
+
+        //     done();
+        //   })
+        //   .catch((err) => {
+        //     console.log(err);
+        //     done();
+        //   });
         break;
 
       case "pizza":
