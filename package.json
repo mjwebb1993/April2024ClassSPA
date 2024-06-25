@@ -30,6 +30,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^8.4.0",
     "navigo": "^8.11.1",
+    "node-mailjet": "^6.0.5",
     "parcel": "^2.12.0"
   }
 }

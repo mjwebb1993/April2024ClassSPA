@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import pizzas from "./routers/pizzas.js";
 import weather from "./routers/weather.js";
 import axios from "axios";
+import mailjet from "node-mailjet";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -28,6 +29,41 @@ db.once(
   "open",
   console.log.bind(console, "Successfully opened connection to Mongo!")
 );
+
+const client = mailjet.apiConnect(
+  process.env.MJ_APIKEY_PUBLIC,
+  process.env.MJ_APIKEY_PRIVATE
+);
+
+client
+  .post("send", { version: "v3.1" })
+  .request({
+    Messages: [
+      {
+        From: {
+          Email: "mjwebb1993@yahoo.com",
+          Name: "Mailjet Pilot"
+        },
+        To: [
+          {
+            Email: "mjwebb1993@yahoo.com",
+            Name: "passenger 1"
+          }
+        ],
+        Subject: "Your email flight plan!",
+        TextPart:
+          "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
+        HTMLPart:
+          '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!'
+      }
+    ]
+  })
+  .then((result) => {
+    console.log(result.body);
+  })
+  .catch((err) => {
+    console.log(err.statusCode);
+  });
 
 // Logging Middleware
 const logging = (request, response, next) => {
@@ -70,10 +106,10 @@ app.get("/mex/:symbol", (request, response) => {
     .get(
       `https://api.mexc.com/api/v3/klines?symbol=${request.params.symbol}USDT&interval=1d&limit=100`
     )
-    .then(mexData => {
+    .then((mexData) => {
       response.send(mexData.data);
     })
-    .catch(error => {
+    .catch((error) => {
       response.status(500).json(error);
     });
 });
