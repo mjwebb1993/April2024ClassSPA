@@ -35,36 +35,6 @@ const client = mailjet.apiConnect(
   process.env.MJ_APIKEY_PRIVATE
 );
 
-client
-  .post("send", { version: "v3.1" })
-  .request({
-    Messages: [
-      {
-        From: {
-          Email: "mjwebb1993@yahoo.com",
-          Name: "Mailjet Pilot"
-        },
-        To: [
-          {
-            Email: "mjwebb1993@yahoo.com",
-            Name: "passenger 1"
-          }
-        ],
-        Subject: "Your email flight plan!",
-        TextPart:
-          "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
-        HTMLPart:
-          '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!'
-      }
-    ]
-  })
-  .then((result) => {
-    console.log(result.body);
-  })
-  .catch((err) => {
-    console.log(err.statusCode);
-  });
-
 // Logging Middleware
 const logging = (request, response, next) => {
   console.log(
@@ -99,6 +69,40 @@ app.get("/status", (request, response) => {
   // Create the response body
   // End and return the response
   response.send(JSON.stringify({ message: "Service healthy" }));
+});
+
+app.get("/mail", (request, response) => {
+  client
+    .post("send", { version: "v3.1" })
+    .request({
+      Messages: [
+        {
+          From: {
+            Email: "mjwebb1993@yahoo.com",
+            Name: "Mailjet Pilot"
+          },
+          To: [
+            {
+              Email: "mjwebb1993@yahoo.com",
+              Name: "passenger 1"
+            }
+          ],
+          Subject: "Your email flight plan!",
+          TextPart:
+            "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
+          HTMLPart:
+            '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!'
+        }
+      ]
+    })
+    .then((result) => {
+      console.log(result.body);
+      response.json(result.body);
+    })
+    .catch((err) => {
+      console.log(err.statusCode);
+      response.sendStatus(err.statusCode);
+    });
 });
 
 app.get("/mex/:symbol", (request, response) => {
